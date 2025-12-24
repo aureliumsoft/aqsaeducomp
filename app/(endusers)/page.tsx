@@ -66,16 +66,6 @@ export default function Home() {
             <Link href="/courses" className={buttonVariants({ size: "lg" })}>
               Explore Courses
             </Link>
-
-            {/* <Link
-              href="/login"
-              className={`rounded-xl ${buttonVariants({
-                size: "lg",
-                variant: "outline",
-              })}`}
-            >
-              Sign In
-            </Link> */}
           </div>
         </section>
 

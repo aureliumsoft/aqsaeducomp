@@ -74,9 +74,9 @@ export function UserDropdown({
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/dashboard" className="flex items-center gap-2">
+          <Link href="/admin" className="flex items-center gap-2">
             <LayoutDashboard className="w-4 h-4" />
-            Dashboard
+            Admin Dashboard
           </Link>
         </DropdownMenuItem>
 
