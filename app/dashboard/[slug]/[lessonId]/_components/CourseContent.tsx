@@ -48,11 +48,15 @@ export function CourseContent({ data }: iAppProps) {
     return (
       <div className="aspect-video bg-black rounded-lg relative overflow-hidden">
         <video
-          src={videoUrl}
           className="w-full h-full object-cover"
           controls
           poster={thumbnailUrl}
-        />
+        >
+          <source src={videoUrl} type="video/mp4" />
+          <source src={videoUrl} type="video/webm" />
+          <source src={videoUrl} type="video/ogg" />
+          Your browser doesn't support this video type.
+        </video>
       </div>
     );
   }
