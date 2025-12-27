@@ -41,17 +41,26 @@ export const chapterSchema = z.object({
   courseId: z.string().uuid({ message: "Invalid course id" }),
 });
 
-export const lessonSchema = z.object({
-  name: z.string().min(3, "name must be at least 3 characters long"),
-  courseId: z.string().uuid({ message: "Invalid course id" }),
-  chapterId: z.string().uuid({ message: "Invalid chapter id" }),
-  description: z
-    .string()
-    .min(3, "Description must be at least 3 characters long")
-    .optional(),
-  thumbnailKey: z.string().optional(),
-  videoKey: z.string().optional(),
-});
+export const lessonSchema = z
+  .object({
+    name: z.string().min(3, "name must be at least 3 characters long"),
+    courseId: z.string().uuid({ message: "Invalid course id" }),
+    chapterId: z.string().uuid({ message: "Invalid chapter id" }),
+    description: z.string().optional(),
+    thumbnailKey: z.string().optional(),
+
+    videoSource: z.enum(["UPLOAD", "EMBED"]),
+    videoKey: z.string().optional(),
+    embedUrl: z.string().url().optional(),
+  })
+  .refine(
+    (data) =>
+      data.videoSource === "UPLOAD" ? !!data.videoKey : !!data.embedUrl,
+    {
+      message: "Video source data missing",
+      path: ["videoSource"],
+    }
+  );
 
 export type CourseSchemaType = z.infer<typeof courseSchema>;
 export type ChapterSchemaType = z.infer<typeof chapterSchema>;

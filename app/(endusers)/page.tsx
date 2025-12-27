@@ -47,7 +47,7 @@ export default function Home() {
         {/* Blurred Glow Blobs */}
         <div className="absolute -top-10 -left-10 w-72 h-72 bg-primary/30 dark:bg-primary/20 rounded-full blur-3xl" />
         <div className="absolute top-20 right-0 w-96 h-96 bg-primary/20 dark:bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-destructive/10 dark:bg-destructive/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-destructive/10 dark:bg-destructive/10 rounded-full blur-3xl -z-10" />
 
         {/* HERO SECTION */}
         <section className="py-24 px-6 text-center">

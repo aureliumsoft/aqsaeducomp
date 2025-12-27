@@ -25,38 +25,51 @@ export function CourseContent({ data }: iAppProps) {
       ?.completed === true;
 
   function VideoPlayer({
-    thumbnailKey,
+    videoSource,
     videoKey,
+    embedUrl,
+    thumbnailKey,
   }: {
+    videoSource: "UPLOAD" | "EMBED";
+    videoKey?: string;
+    embedUrl?: string;
     thumbnailKey: string;
-    videoKey: string;
   }) {
-    const videoUrl = useConstructUrl(videoKey);
-    const thumbnailUrl = useConstructUrl(thumbnailKey);
-
-    if (!videoKey) {
+    if (videoSource === "EMBED" && embedUrl) {
       return (
-        <div className="aspect-video bg-muted rounded-lg flex flex-col items-center justify-center">
-          <BookIcon className="size-16 text-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">
-            This lesson does not have a video yet
-          </p>
+        <div className="aspect-video rounded-lg overflow-hidden">
+          <iframe
+            src={embedUrl}
+            className="w-full h-full"
+            // allow="autoplay; encrypted-media"
+            allowFullScreen
+          />
         </div>
       );
     }
 
-    return (
-      <div className="aspect-video bg-black rounded-lg relative overflow-hidden">
+    if (videoSource === "UPLOAD" && videoKey) {
+      const videoUrl = useConstructUrl(videoKey);
+      const thumbnailUrl = useConstructUrl(thumbnailKey);
+
+      return (
         <video
-          className="w-full h-full object-cover"
+          key={videoUrl}
+          className="w-full aspect-video rounded-lg"
           controls
           poster={thumbnailUrl}
         >
           <source src={videoUrl} type="video/mp4" />
           <source src={videoUrl} type="video/webm" />
           <source src={videoUrl} type="video/ogg" />
-          Your browser doesn't support this video type.
+          Your browser doesn't support this video type.{" "}
         </video>
+      );
+    }
+
+    return (
+      <div className="aspect-video bg-muted flex items-center justify-center rounded-lg">
+        <BookIcon className="size-14 text-muted-foreground" />
       </div>
     );
   }
@@ -85,7 +98,12 @@ export function CourseContent({ data }: iAppProps) {
 
   return (
     <div className="flex flex-col bg-background pl-6">
-      <VideoPlayer thumbnailKey={data.thumbnailKey} videoKey={data.videoKey} />
+      <VideoPlayer
+        thumbnailKey={data.thumbnailKey}
+        videoKey={data.videoKey}
+        embedUrl={data.embedUrl}
+        videoSource={data.videoSource}
+      />
       <div className="py-4 border-b">
         <Button
           variant="outline"

@@ -31,6 +31,15 @@ import { toast } from "sonner";
 import { id } from "zod/v4/locales";
 import { updateLesson } from "../actions";
 import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface iAppProps {
   data: AdminLessonType;
@@ -50,9 +59,13 @@ export function LessonForm({ chapterId, data, courseId }: iAppProps) {
       courseId: courseId,
       description: data.description,
       thumbnailKey: data.thumbnailKey,
-      videoKey: data.videoKey,
+      videoSource: data.videoKey ? "UPLOAD" : "EMBED",
+      videoKey: data.videoKey || "",
+      embedUrl: data.embedUrl || "",
     },
   });
+
+  const videoSource = form.watch("videoSource");
 
   async function onSubmit(values: LessonSchemaType) {
     startTransition(async () => {
@@ -77,7 +90,7 @@ export function LessonForm({ chapterId, data, courseId }: iAppProps) {
     <div>
       <div className="flex gap-4">
         <Link
-          href="/admin/courses"
+          href={`/admin/courses/${courseId}/edit`}
           className={buttonVariants({
             variant: "outline",
             size: "icon-sm",
@@ -155,23 +168,50 @@ export function LessonForm({ chapterId, data, courseId }: iAppProps) {
 
               <FormField
                 control={form.control}
-                name="videoKey"
+                name="videoSource"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="mx-4 font-bold">
-                      Lesson Video
-                    </FormLabel>
-                    <FormControl>
-                      <Uploader
-                        onChange={field.onChange}
-                        value={field.value}
-                        fileTypeAccepted="video"
-                      />
-                    </FormControl>
+                    <FormLabel className="font-bold mx-4">Video Type</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select video type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="EMBED">Youtube Embedded</SelectItem>
+                        <SelectItem value="UPLOAD">Upload Video</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
+              {videoSource === "UPLOAD" ? (
+                <FormField
+                  control={form.control}
+                  name="videoKey"
+                  render={({ field }) => (
+                    <Uploader
+                      value={field.value}
+                      onChange={field.onChange}
+                      fileTypeAccepted="video"
+                    />
+                  )}
+                />
+              ) : (
+                <FormField
+                  control={form.control}
+                  name="embedUrl"
+                  render={({ field }) => (
+                    <Input
+                      placeholder="https://www.youtube.com/watch?v=XXXX"
+                      {...field}
+                    />
+                  )}
+                />
+              )}
 
               <Button
                 disabled={isPending}

@@ -18,6 +18,7 @@ export async function adminGetLesson(id: string) {
       thumbnailKey: true,
       description: true,
       position: true,
+      embedUrl: true,
     },
   });
 

@@ -17,6 +17,8 @@ export async function getLessonContent(lessonId: string) {
       thumbnailKey: true,
       videoKey: true,
       position: true,
+      embedUrl: true,
+      videoSource: true,
       lessonProgress: {
         where: {
           userId: session.id,

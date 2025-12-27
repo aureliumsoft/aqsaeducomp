@@ -21,14 +21,16 @@ export async function updateLesson(
     }
 
     await prisma.lesson.update({
-      where: {
-        id: lessonId,
-      },
+      where: { id: lessonId },
       data: {
         title: result.data?.name,
         description: result.data?.description,
         thumbnailKey: result.data?.thumbnailKey,
-        videoKey: result.data?.videoKey,
+        videoSource: result.data?.videoSource,
+        videoKey:
+          result.data?.videoSource === "UPLOAD" ? result.data?.videoKey : "",
+        embedUrl:
+          result.data?.videoSource === "EMBED" ? result.data?.embedUrl : null,
       },
     });
 

@@ -122,8 +122,11 @@ model Lesson {
   title        String
   description  String
   thumbnailKey String
-  videoKey     String
   position     Int
+
+  videoSource VideoSource @default(EMBED)
+  videoKey    String? // uploaded video key
+  embedUrl    String? // youtube embed url
 
   lessonProgress LessonProgress[]
 
@@ -179,4 +182,9 @@ enum EnrolmentStatus {
   Pending
   Active
   Cancelled
+}
+
+enum VideoSource {
+  UPLOAD
+  EMBED
 }
