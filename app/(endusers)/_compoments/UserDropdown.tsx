@@ -60,21 +60,30 @@ export function UserDropdown({
 
         {/* Menu Items */}
         <DropdownMenuItem asChild>
-          <Link href="/profile" className="flex items-center gap-2">
+          <Link
+            href="/profile"
+            className="flex items-center gap-2 hover:cursor-pointer"
+          >
             <User className="w-4 h-4" />
             Profile
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/courses" className="flex items-center gap-2">
+          <Link
+            href="/courses"
+            className="flex items-center gap-2 hover:cursor-pointer"
+          >
             <Book className="w-4 h-4" />
             Courses
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/admin" className="flex items-center gap-2">
+          <Link
+            href="/admin"
+            className="flex items-center gap-2 hover:cursor-pointer"
+          >
             <LayoutDashboard className="w-4 h-4" />
             Admin Dashboard
           </Link>
@@ -83,7 +92,7 @@ export function UserDropdown({
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          className="flex items-center gap-2 text-red-600 cursor-pointer"
+          className="flex items-center gap-2 text-red-600 "
           onClick={handleSignOut}
         >
           <LogOut className="w-4 h-4" />

@@ -1,36 +1,216 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js LMS Project
+
+## Overview
+
+This is a scalable **Learning Management System (LMS)** built with **Next.js App Router**, designed for admins, instructors, and end users (students). It supports authentication, course management, payments, enrolments, dashboards, and future quiz integrations.
+
+---
+
+## Tech Stack
+
+- **Next.js (App Router)**
+- **TypeScript**
+- **Better Auth** (Email / OTP)
+- **2Checkout** (Payments)
+- **AWS S3** (File uploads)
+- **Tailwind CSS**
+
+---
+
+## Project Structure
+
+```txt
+app/
+├── (auth)/
+│   ├── login/
+│   └── verify-request/
+│
+├── (endusers)/
+│   ├── courses/
+│   │   ├── [slug]/
+│   │   └── _components/
+│   └── _components/
+│
+├── admin/
+│   └── courses/
+│       ├── create/
+│       ├── [id]/
+│       │   ├── delete/
+│       │   ├── edit/
+│       │   └── [chapterId]/[lessonId]/
+│       └── _components/
+│
+├── api/
+│   ├── auth/
+│   ├── enrolment/
+│   ├── 2checkout/
+│   └── s3/
+│
+├── dashboard/
+│   ├── [slug]/[lessonId]/
+│   └── _components/
+│
+├── data/
+│   ├── admin/
+│   ├── course/
+│   └── user/
+│
+├── payment/
+│   ├── cancel/
+│   └── success/
+│
+└── profile/
+
+components/
+├── file-uploader/
+├── general/
+├── rich-text-editor/
+├── sidebar/
+└── ui/
+```
+
+---
+
+## Routing Strategy
+
+### Route Groups
+
+- `(auth)` → Authentication routes (login, verification)
+- `(endusers)` → Student-facing pages
+
+### Dynamic Routes
+
+- `[slug]` → Course identifier
+- `[id]` → Admin course ID
+- `[chapterId]`, `[lessonId]` → Nested learning content
+
+---
+
+## Roles & Access
+
+### Admin
+
+- Create, edit, delete courses
+- Manage chapters and lessons
+- Upload content to S3
+
+### End User (Student)
+
+- Browse courses
+- Enroll in paid/free courses
+- Access lessons via dashboard
+
+---
+
+## Payments
+
+- Integrated with **2Checkout**
+- Webhooks handled under `/api/2checkout/webhooks`
+- Payment success & cancel pages
+
+---
+
+## File Uploads
+
+- AWS S3 integration
+- Routes:
+
+  - `/api/s3/upload`
+  - `/api/s3/delete`
+
+---
+
+## Quiz Module (Google Forms Integration)
+
+This LMS supports quizzes using **Google Forms**, allowing fast creation and reliable submissions.
+
+### Quiz Folder Structure
+
+```txt
+app/
+├── admin/
+│   └── quizzes/
+│       ├── create/
+│       │   └── _components/
+│       ├── [quizId]/
+│       │   ├── edit/
+│       │   │   └── _components/
+│       │   └── analytics/
+│       └── _components/
+│
+├── (endusers)/
+│   └── quizzes/
+│       ├── [quizId]/
+│       │   └── page.tsx
+│       └── _components/
+│
+├── api/
+│   └── quizzes/
+│       ├── create/
+│       ├── assign/
+│       └── validate-access/
+```
+
+---
+
+### Quiz Flow
+
+#### Admin Flow
+
+1. Admin creates quiz using **Google Forms**
+2. Stores:
+
+   - Google Form URL
+   - Course ID
+   - Lesson ID
+   - Quiz title
+
+3. Assigns quiz to a lesson
+
+#### Student Flow
+
+1. Student opens lesson
+2. Clicks **Start Quiz**
+3. Redirected to Google Form
+4. Submits answers
+5. Completion status saved
+
+---
+
+### Access Control
+
+- Only **enrolled users** can access quizzes
+- Validation via API:
+
+  - `/api/quizzes/validate-access`
+
+- Middleware checks:
+
+  - Authentication
+  - Course enrollment
+
+---
+
+---
+
+## Future Enhancements
+
+- Native quiz engine
+- Auto grading
+- Certificates
+- Quiz analytics dashboard
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## License
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

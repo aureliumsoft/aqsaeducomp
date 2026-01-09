@@ -7,10 +7,18 @@ import { tryCatch } from "@/hooks/try-catch";
 import { toast } from "sonner";
 import { useConfetti } from "@/hooks/use-confetti";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-export function EnrollmentButton({ courseId }: { courseId: string }) {
+interface Props {
+  courseId: string;
+  isFree: boolean;
+  slug: string;
+}
+
+export function EnrollmentButton({ courseId, isFree, slug }: Props) {
   const [isPending, startTransition] = useTransition();
   const { triggerConfetti } = useConfetti();
+  const router = useRouter();
 
   function onSubmit() {
     startTransition(async () => {
@@ -24,9 +32,9 @@ export function EnrollmentButton({ courseId }: { courseId: string }) {
       }
 
       if (result.status === "success") {
-        // confetti animation
-        triggerConfetti();
+        router.push(`/dashboard/${slug}`);
         toast.success(result.message);
+        triggerConfetti();
       } else if (result.status === "error") {
         toast.error(result.message);
       }
@@ -39,14 +47,13 @@ export function EnrollmentButton({ courseId }: { courseId: string }) {
       disabled={isPending}
       className="w-full hover:cursor-pointer"
     >
-      {isPending ? (
-        <>
-          <Loader2 className="size-4 animate-spin" />
-          Loading...
-        </>
-      ) : (
-        "Enroll Now"
-      )}
+      {isPending
+        ? isFree
+          ? "Enrolling..."
+          : "Redirecting..."
+        : isFree
+        ? "Enroll Now"
+        : "Buy Now"}
     </Button>
   );
 }

@@ -11,6 +11,7 @@ export const courseCategory = [
   "Teaching",
   "IT & Sofaware",
 ] as const;
+export const quizTypeEnum = ["CHAPTER", "COURSE"] as const;
 
 export const courseSchema = z.object({
   title: z
@@ -34,6 +35,8 @@ export const courseSchema = z.object({
     .max(200, "Title must be at most 200 characters long"),
   slug: z.string().min(3, "Title must be at least 3 characters long"),
   status: z.enum(courseStatus, "Status is required"),
+  isFree: z.boolean(),
+  isFeatured: z.boolean(),
 });
 
 export const chapterSchema = z.object({
@@ -62,6 +65,15 @@ export const lessonSchema = z
     }
   );
 
+export const quizSchema = z.object({
+  title: z.string().min(3, "Quiz title is required"),
+  googleFormUrl: z.string().url("Invalid Google Form URL"),
+  type: z.enum(quizTypeEnum),
+  courseId: z.string().min(1, "Course ID is required"),
+  chapterId: z.string().optional(),
+});
+
+export type QuizSchemaType = z.infer<typeof quizSchema>;
 export type CourseSchemaType = z.infer<typeof courseSchema>;
 export type ChapterSchemaType = z.infer<typeof chapterSchema>;
 export type LessonSchemaType = z.infer<typeof lessonSchema>;

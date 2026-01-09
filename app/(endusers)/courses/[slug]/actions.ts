@@ -3,7 +3,6 @@
 import { requireUser } from "@/app/data/user/require-user";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
-import { stripe } from "@/lib/stripe";
 import { ApiResponse } from "@/lib/types";
 import { redirect } from "next/navigation";
 
@@ -13,96 +12,67 @@ export async function enrollInCourseAction(
   const user = await requireUser();
 
   let checkoutUrl: string;
+  const PKR_TO_USD_RATE = 280;
 
   try {
     const course = await prisma.course.findUnique({
       where: { id: courseId },
-      select: { id: true, title: true, price: true, stripePriceId: true },
+      select: { id: true, title: true, price: true, isFree: true, slug: true },
     });
 
-    if (!course || !course.stripePriceId) {
-      return { status: "error", message: "Course or payment config not found" };
+    if (!course) {
+      return { status: "error", message: "Course not found" };
     }
 
-    let stripeCustomerId: string;
-    const userWithStripeCustomerId = await prisma.user.findUnique({
-      where: { id: user.id },
-      select: { stripeCustomerId: true },
-    });
-
-    if (userWithStripeCustomerId?.stripeCustomerId) {
-      stripeCustomerId = userWithStripeCustomerId.stripeCustomerId;
-    } else {
-      const customer = await stripe.customers.create({
-        email: user.email,
-        name: user.name,
-        metadata: { userId: user.id },
-      });
-      stripeCustomerId = customer.id;
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { stripeCustomerId },
-      });
-    }
-
-    const result = await prisma.$transaction(async (tx) => {
-      // Check if already enrolled
-      const existingEnrolment = await tx.enrolment.findUnique({
+    // ---------- FREE COURSE ----------
+    if (course.isFree) {
+      await prisma.enrolment.upsert({
         where: { courseId_userId: { courseId, userId: user.id } },
-        select: { id: true, status: true },
+        update: { status: "Active", amount: 0, updatedAt: new Date() },
+        create: { courseId, userId: user.id, status: "Active", amount: 0 },
       });
 
-      if (existingEnrolment?.status === "Active") {
-        return { alreadyEnrolled: true };
-      }
-
-      // Create or update enrolment as Pending
-      const enrolment = existingEnrolment
-        ? await tx.enrolment.update({
-            where: { id: existingEnrolment.id },
-            data: {
-              amount: course.price,
-              status: "Pending",
-              updatedAt: new Date(),
-            },
-          })
-        : await tx.enrolment.create({
-            data: {
-              userId: user.id,
-              courseId,
-              amount: course.price,
-              status: "Pending",
-            },
-          });
-
-      // Create Stripe Checkout
-      const checkoutSession = await stripe.checkout.sessions.create({
-        customer: stripeCustomerId,
-        line_items: [{ price: course.stripePriceId, quantity: 1 }],
-        mode: "payment",
-        success_url: `${env.BETTER_AUTH_URL}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${env.BETTER_AUTH_URL}/payment/cancel`,
-        metadata: {
-          enrolmentId: enrolment.id.toString(),
-          userId: user.id,
-          courseId: course.id,
-        },
-      });
-
-      return { checkoutUrl: checkoutSession.url };
-    });
-
-    if ((result as any).alreadyEnrolled) {
-      return {
-        status: "success",
-        message: "You are already enrolled in this course",
-      };
+      // redirect straight to dashboard or course page
+      return { status: "success", message: "Enrolled in free course" };
     }
 
-    checkoutUrl = (result as any).checkoutUrl;
+    // Convert PKR → USD
+    const usdPrice = Number((course.price / PKR_TO_USD_RATE).toFixed(2));
+
+    const enrolment = await prisma.enrolment.upsert({
+      where: {
+        courseId_userId: { courseId, userId: user.id },
+      },
+      update: {
+        amount: course.price,
+        status: "Pending",
+        updatedAt: new Date(),
+      },
+      create: {
+        userId: user.id,
+        courseId,
+        amount: course.price,
+        status: "Pending",
+      },
+    });
+
+    const baseUrl = "https://www.2checkout.com/checkout/purchase";
+
+    const params: Record<string, string> = {
+      sid: env.TWOCHECKOUT_MERCHANT_CODE,
+      mode: "2CO",
+      li_0_name: course.title,
+      li_0_price: usdPrice.toFixed(2),
+      li_0_quantity: "1",
+      merchant_order_id: enrolment.id,
+      x_receipt_link_url: `${env.PUBLIC_APP_URL}/payment/success`,
+      demo: env.TWOCHECKOUT_TEST_MODE === "true" ? "Y" : "N",
+    };
+
+    checkoutUrl = `${baseUrl}?${new URLSearchParams(params).toString()}`;
   } catch (error) {
     console.error("Enroll Error:", error);
-    return { status: "error", message: "Failed to enroll in course" };
+    return { status: "error", message: "Failed to enroll" };
   }
 
   redirect(checkoutUrl);

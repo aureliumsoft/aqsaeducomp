@@ -30,6 +30,7 @@ import {
   Loader2,
   PlusIcon,
   Sparkle,
+  Star,
 } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -51,6 +52,7 @@ import { CreateCourse } from "./actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useConfetti } from "@/hooks/use-confetti";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function CourseCreationPage() {
   const [isPending, startTransition] = useTransition();
@@ -70,6 +72,8 @@ export default function CourseCreationPage() {
       status: "Draft",
       slug: "",
       smallDescription: "",
+      isFree: false,
+      isFeatured: false,
     },
   });
 
@@ -312,30 +316,88 @@ export default function CourseCreationPage() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="mx-4 font-bold">
-                        Course Price (Rs.)
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min={0}
-                          placeholder="Enter Course Price"
-                          value={field.value}
-                          onChange={(e) =>
-                            field.onChange(Number(e.target.value))
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+
+                <div className="flex flex-col md:flex-row gap-4 items-end">
+                  <div className="md:flex-3">
+                    <FormField
+                      control={form.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="mx-4 font-bold">
+                            Course Price (Rs.)
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min={0}
+                              placeholder="Enter Course Price"
+                              disabled={form.watch("isFree")}
+                              value={field.value}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <div className="md:flex-1">
+                    <FormField
+                      control={form.control}
+                      name="isFree"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormControl>
+                            <div className="relative inline-flex rounded-lg border bg-muted">
+                              {/* Sliding indicator */}
+                              <div
+                                className={`absolute top-1 bottom-1 w-1/2 rounded-md bg-primary shadow transition-transform duration-200 ${
+                                  field.value
+                                    ? "translate-x-full"
+                                    : "translate-x-0"
+                                }`}
+                              />
+
+                              {/* PAID */}
+                              <button
+                                type="button"
+                                className={`relative z-10 px-4 py-2 text-sm font-medium transition-colors ${
+                                  !field.value ? "" : "text-muted-foreground"
+                                }`}
+                                onClick={() => field.onChange(false)}
+                              >
+                                Paid
+                              </button>
+
+                              {/* FREE */}
+                              <button
+                                type="button"
+                                className={`relative z-10 px-4 py-2 text-sm font-medium transition-colors ${
+                                  field.value ? "" : "text-muted-foreground"
+                                }`}
+                                onClick={() => {
+                                  field.onChange(true);
+                                  form.setValue("price", 0, {
+                                    shouldValidate: true,
+                                  });
+                                }}
+                              >
+                                Free
+                              </button>
+                            </div>
+                          </FormControl>
+
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
               </div>
+
               <FormField
                 control={form.control}
                 name="status"
@@ -358,6 +420,31 @@ export default function CourseCreationPage() {
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="isFeatured"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start gap-3">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={form.watch("status") !== "Published"}
+                      />
+                    </FormControl>
+
+                    <div className="space-y-1 leading-none">
+                      <FormLabel className="font-bold flex items-center gap-1">
+                        Featured Course{" "}
+                        <Star size={14} className="text-yellow-500" />
+                      </FormLabel>
+                    </div>
+
                     <FormMessage />
                   </FormItem>
                 )}

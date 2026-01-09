@@ -2,8 +2,6 @@
 
 import { requireAdmin } from "@/app/data/admin/require-admin";
 import { prisma } from "@/lib/db";
-import { stripe } from "@/lib/stripe";
-import { tiptapToPlainText } from "@/lib/tiptapToPlainText";
 import { ApiResponse } from "@/lib/types";
 import {
   chapterSchema,
@@ -14,7 +12,6 @@ import {
   LessonSchemaType,
 } from "@/lib/zodSchema";
 import { revalidatePath } from "next/cache";
-import { JSONContent } from "@tiptap/react";
 
 export async function editCourse(
   data: CourseSchemaType,
@@ -40,42 +37,11 @@ export async function editCourse(
       return { status: "error", message: "Course not found" };
     }
 
-    let stripePriceId = existingCourse.stripePriceId;
-
-    // Update Stripe Product: title + description
-    const oldPrice = await stripe.prices.retrieve(existingCourse.stripePriceId);
-    const productId = oldPrice.product as string;
-
-    const json: JSONContent = JSON.parse(result.data?.description);
-
-    const plainTextDescription = tiptapToPlainText(json);
-
-    await stripe.products.update(productId, {
-      name: result.data.title,
-      description: plainTextDescription,
-    });
-
-    // Update Stripe Price if price changed
-    if (existingCourse.price !== result.data.price) {
-      const newPrice = await stripe.prices.create({
-        product: productId,
-        currency: "pkr",
-        unit_amount: result.data.price * 100,
-      });
-
-      await stripe.products.update(productId, {
-        default_price: newPrice.id,
-      });
-
-      stripePriceId = newPrice.id;
-    }
-
     // Update course in database
     await prisma.course.update({
       where: { id, userId: user.user.id },
       data: {
         ...result.data,
-        stripePriceId,
       },
     });
 

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { IconDashboard, IconListDetails } from "@tabler/icons-react";
+import { IconDashboard, IconListDetails, IconNews } from "@tabler/icons-react";
 
 import { NavMain } from "./nav-main";
 import { NavUser } from "@/components/sidebar/nav-user";
@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import Image from "next/image";
+import { NewspaperIcon } from "lucide-react";
 
 const navMain = [
   {
@@ -27,6 +28,11 @@ const navMain = [
     title: "Courses",
     url: "/admin/courses",
     icon: IconListDetails,
+  },
+  {
+    title: "Quiz",
+    url: "/admin/quiz/create",
+    icon: IconNews,
   },
 ];
 

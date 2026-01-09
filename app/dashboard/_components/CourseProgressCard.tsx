@@ -1,6 +1,6 @@
 "use client";
 
-import { EnrolledCourseType } from "@/app/data/user/get-inrolled-courses";
+import { CourseSidebarDataType } from "@/app/data/course/get-course-sidebar-data";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,11 +12,11 @@ import { ArrowRightIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-interface iAppProps {
-  data: EnrolledCourseType;
+interface CourseProgressCardProps {
+  data: { course: CourseSidebarDataType["course"] };
 }
 
-export function CourseProgressCard({ data }: iAppProps) {
+export function CourseProgressCard({ data }: CourseProgressCardProps) {
   const thumbnailUrl = useConstructUrl(data.course.fileKey);
   const { totalLessons, completedLessons, progressPercentage } =
     useCourseProgress({ courseData: data.course });
@@ -54,7 +54,7 @@ export function CourseProgressCard({ data }: iAppProps) {
           </p>
         </div>
         <Link
-          href={`/dashboard/${data.course.slug}`}
+          href={`/dashboard/course/${data.course.slug}`}
           className={buttonVariants({
             className: "w-full mt-4",
           })}

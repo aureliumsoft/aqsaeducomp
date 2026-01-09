@@ -1,13 +1,8 @@
 import { getIndivisualCourse } from "@/app/data/course/get-course";
 import { RenderDescription } from "@/components/rich-text-editor/RenderDescription";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { Separator } from "@/components/ui/separator";
 import { useConstructUrl } from "@/hooks/use-contstruct-url";
 import {
@@ -15,9 +10,7 @@ import {
   IconCategory,
   IconChartBar,
   IconCheck,
-  IconChevronDown,
   IconClock,
-  IconPlayerPlay,
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { checkIfCourseBought } from "@/app/data/user/user-is-enrolled";
@@ -104,12 +97,20 @@ export default async function SlugPage({ params }: { params: Params }) {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <span className="text-lg font-medium">Price:</span>
-                <span className="text-2xl font-bold text-primary">
-                  {new Intl.NumberFormat("en-PK", {
-                    style: "currency",
-                    currency: "PKR",
-                  }).format(course.price)}
-                </span>
+                {course.isFree ? (
+                  <Badge className="bg-green-500 text-white px-3 py-1">
+                    Free
+                  </Badge>
+                ) : (
+                  <>
+                    <span className="text-2xl font-bold text-primary">
+                      {new Intl.NumberFormat("en-PK", {
+                        style: "currency",
+                        currency: "PKR",
+                      }).format(course.price)}
+                    </span>
+                  </>
+                )}
               </div>
 
               <div className="mb-6 space-y-3 bg-accent p-4 rounded-2xl w-full">
@@ -196,7 +197,9 @@ export default async function SlugPage({ params }: { params: Params }) {
                 </ul>
               </div>
 
+              {/* Enrollment / Buy / Watch Button */}
               {isEnrolled ? (
+                // User already enrolled
                 <Link
                   className={buttonVariants({
                     variant: "outline",
@@ -207,7 +210,12 @@ export default async function SlugPage({ params }: { params: Params }) {
                   Watch Course
                 </Link>
               ) : (
-                <EnrollmentButton courseId={course.id} />
+                // Free course and user not enrolled
+                <EnrollmentButton
+                  courseId={course.id}
+                  isFree={course.isFree}
+                  slug={course.slug}
+                />
               )}
               <p className="mt-5 text-center text-xs text-muted-foreground">
                 30-day money-back guarantee

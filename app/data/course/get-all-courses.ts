@@ -19,6 +19,7 @@ export async function getAllCourses() {
       level: true,
       duration: true,
       category: true,
+      isFree: true,
     },
     orderBy: {
       createdAt: "desc",

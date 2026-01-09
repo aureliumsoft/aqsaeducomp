@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useConstructUrl } from "@/hooks/use-contstruct-url";
 import { IconChartBar } from "@tabler/icons-react";
-import { ArrowRightIcon, SchoolIcon, TimerIcon } from "lucide-react";
+import { ArrowRightIcon, TimerIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -20,7 +20,11 @@ export function PublicCourseCard({ data }: iAppProps) {
 
   return (
     <Card className="group relative py-0 gap-0">
-      <Badge className="absolute top-2 right-2 z-10">{data.level}</Badge>
+      {data.isFree ? (
+        <Badge className="bg-green-500 absolute top-2 right-2 z-10">Free</Badge>
+      ) : (
+        <Badge className="bg-red-500 absolute top-2 right-2 z-10">Paid</Badge>
+      )}
       <Image
         width={600}
         height={400}

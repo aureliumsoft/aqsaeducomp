@@ -1,15 +1,11 @@
-import "server-only";
-import { requireUser } from "./require-user";
 import { prisma } from "@/lib/db";
+import { requireUser } from "./require-user";
 
 export async function getEnrolledCourses() {
   const user = await requireUser();
 
   const data = await prisma.enrolment.findMany({
-    where: {
-      userId: user.id,
-      status: "Active",
-    },
+    where: { userId: user.id, status: "Active" },
     select: {
       course: {
         select: {
@@ -22,6 +18,7 @@ export async function getEnrolledCourses() {
           duration: true,
           price: true,
           category: true,
+          // Chapters
           chapters: {
             select: {
               id: true,
@@ -34,16 +31,32 @@ export async function getEnrolledCourses() {
                   description: true,
                   position: true,
                   lessonProgress: {
-                    where: {
-                      userId: user.id,
-                    },
-                    select: {
-                      id: true,
-                      completed: true,
-                      lessonId: true,
-                    },
+                    where: { userId: user.id },
+                    select: { id: true, completed: true, lessonId: true },
                   },
                 },
+              },
+              quizzes: {
+                select: {
+                  id: true,
+                  title: true,
+                  googleFormUrl: true,
+                  quizSubmissions: {
+                    where: { userId: user.id },
+                    select: { id: true },
+                  },
+                },
+              },
+            },
+          },
+          quizzes: {
+            select: {
+              id: true,
+              title: true,
+              googleFormUrl: true,
+              quizSubmissions: {
+                where: { userId: user.id },
+                select: { id: true },
               },
             },
           },
@@ -52,9 +65,19 @@ export async function getEnrolledCourses() {
     },
   });
 
-  return data;
+  // Normalize to empty arrays if quizzes are null/undefined
+  const normalizedData = data.map((item) => ({
+    course: {
+      ...item.course,
+      quizzes: item.course.quizzes || [],
+      chapters: item.course.chapters.map((ch) => ({
+        ...ch,
+        quizzes: ch.quizzes || [],
+      })),
+    },
+  }));
+
+  return normalizedData;
 }
 
-export type EnrolledCourseType = Awaited<
-  ReturnType<typeof getEnrolledCourses>
->[0];
+export type EnrolledCourseType = Awaited<ReturnType<typeof getEnrolledCourses>>[0];

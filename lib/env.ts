@@ -14,8 +14,12 @@ export const env = createEnv({
     AWS_ENDPOINT_URL_S3: z.string().min(1),
     AWS_ENDPOINT_URL_IAM: z.string().min(1),
     AWS_REGION: z.string().min(1),
-    STRIPE_SECRET_KEY: z.string().min(1),
-    STRIPE_WEBHOOK_SECRET: z.string().min(1),
+    TWOCHECKOUT_MERCHANT_CODE: z.string().min(1),
+    TWOCHECKOUT_PRIVATE_KEY: z.string().min(1),
+    TWOCHECKOUT_PUBLIC_KEY: z.string().min(1),
+    TWOCHECKOUT_TEST_MODE: z.string().min(1),
+    TWOCHECKOUT_INS_SECRET_WORD: z.string().min(1),
+    PUBLIC_APP_URL: z.string().min(1),
   },
   client: {
     NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES: z.string().min(1),
@@ -35,8 +39,12 @@ export const env = createEnv({
     AWS_REGION: process.env.AWS_REGION,
     NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES:
       process.env.NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES,
-    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
+    TWOCHECKOUT_MERCHANT_CODE: process.env.TWOCHECKOUT_MERCHANT_CODE,
+    TWOCHECKOUT_PRIVATE_KEY: process.env.TWOCHECKOUT_PRIVATE_KEY,
+    TWOCHECKOUT_PUBLIC_KEY: process.env.TWOCHECKOUT_PUBLIC_KEY,
+    TWOCHECKOUT_TEST_MODE: process.env.TWOCHECKOUT_TEST_MODE,
+    PUBLIC_APP_URL: process.env.PUBLIC_APP_URL,
+    TWOCHECKOUT_INS_SECRET_WORD: process.env.TWOCHECKOUT_INS_SECRET_WORD,
   },
   // For Next.js >= 13.4.4, you only need to destructure client variables:
   // experimental__runtimeEnv: {

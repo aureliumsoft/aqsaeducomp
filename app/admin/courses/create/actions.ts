@@ -1,12 +1,9 @@
 "use server";
 
 import { requireAdmin } from "@/app/data/admin/require-admin";
-import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { stripe } from "@/lib/stripe";
 import { ApiResponse } from "@/lib/types";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchema";
-import { headers } from "next/headers";
 import { JSONContent } from "@tiptap/react";
 import { tiptapToPlainText } from "@/lib/tiptapToPlainText";
 
@@ -25,7 +22,6 @@ export async function CreateCourse(
     const validation = courseSchema.safeParse(data);
 
     const json: JSONContent = JSON.parse(validation.data?.description || "");
-
     const plainTextDescription = tiptapToPlainText(json);
 
     if (!validation.success) {
@@ -35,19 +31,9 @@ export async function CreateCourse(
       };
     }
 
-    const stripeProduct = await stripe.products.create({
-      name: validation.data.title,
-      description: plainTextDescription,
-      default_price_data: {
-        currency: "pkr",
-        unit_amount: validation.data.price * 100,
-      },
-    });
-
     await prisma.course.create({
       data: {
         userId: session?.user.id as string,
-        stripePriceId: stripeProduct.default_price as string,
         ...validation.data,
       },
     });

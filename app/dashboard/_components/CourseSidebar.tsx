@@ -8,12 +8,13 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Progress } from "@/components/ui/progress";
-import { ChevronDownIcon, ChevronRightIcon, Play } from "lucide-react";
+import { ChevronRightIcon, Play } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { LessonItem } from "./LessonItem";
 import { usePathname } from "next/navigation";
 import { useCourseProgress } from "@/hooks/use-course-progress";
+import { StartQuizButton } from "./StartQuizButton";
 
 interface iAppProps {
   course: CourseSidebarDataType["course"];
@@ -47,7 +48,7 @@ export function CourseSidebar({ course }: iAppProps) {
         </div>
 
         {/* Sidebar Progress */}
-        <div className="space-y-2">
+        <div className="space-y-2 mb-4">
           <div className="flex justify-between text-xs">
             <span className="text-muted-foreground">Progress</span>
             <span className="font-medium">
@@ -88,7 +89,6 @@ export function CourseSidebar({ course }: iAppProps) {
                         isOpen && "rotate-90"
                       )}
                     />
-
                     <div className="flex-1 text-left">
                       <p className="font-semibold text-sm truncate">
                         {chapter.position}: {chapter.title}
@@ -101,6 +101,7 @@ export function CourseSidebar({ course }: iAppProps) {
                 </CollapsibleTrigger>
 
                 <CollapsibleContent className="mt-3 pl-5 border-l-2 space-y-3">
+                  {/* Lessons */}
                   {chapter.lessons.map((lesson) => (
                     <LessonItem
                       key={lesson.id}
@@ -114,10 +115,46 @@ export function CourseSidebar({ course }: iAppProps) {
                       }
                     />
                   ))}
+
+                  {/* Chapter quizzes */}
+                  {chapter.quizzes?.map((quiz) => {
+                    const alreadyTaken = quiz.quizSubmissions?.length > 0;
+                    return (
+                      <StartQuizButton
+                        key={quiz.id}
+                        quizId={quiz.id}
+                        disabled={alreadyTaken}
+                        label={
+                          alreadyTaken ? "Already Taken" : "Start Chapter Quiz"
+                        }
+                      />
+                    );
+                  })}
                 </CollapsibleContent>
               </Collapsible>
             );
           })}
+
+          {/* Course-level quizzes at bottom */}
+          {course.quizzes?.length > 0 && (
+            <div className="pt-4 border-t mt-2">
+              <p className="text-xs font-semibold text-muted-foreground mb-2">
+                Course Quiz
+              </p>
+
+              {course.quizzes.map((quiz) => {
+                const alreadyTaken = quiz.quizSubmissions?.length > 0;
+                return (
+                  <StartQuizButton
+                    key={quiz.id}
+                    quizId={quiz.id}
+                    disabled={alreadyTaken}
+                    label={alreadyTaken ? "Already Taken" : "Start Final Test"}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

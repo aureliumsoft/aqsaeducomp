@@ -95,7 +95,8 @@ model Course {
   smallDescription String
   slug             String       @unique
   status           CourseStatus @default(Draft)
-  stripePriceId    String       @unique @default("bjhvjahdvada")
+  isFree           Boolean      @default(false)
+  isFeatured       Boolean      @default(false)
 
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
@@ -103,6 +104,7 @@ model Course {
   userId    String
   chapters  Chapter[]
   enrolment Enrolment[]
+  quizzes   Quiz[]
 }
 
 model Chapter {
@@ -115,6 +117,7 @@ model Chapter {
   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseId  String
   lessons   Lesson[]
+  quizzes   Quiz[]
 }
 
 model Lesson {
@@ -166,6 +169,37 @@ model LessonProgress {
   @@unique([userId, lessonId])
 }
 
+model Quiz {
+  id            String @id @default(uuid())
+  title         String
+  googleFormUrl String
+
+  type QuizType
+
+  courseId  String
+  chapterId String? // NULL for course-level quizzes
+
+  isPublished Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Course          Course?          @relation(fields: [courseId], references: [id])
+  quizSubmissions QuizSubmission[]
+  chapter         Chapter?         @relation(fields: [chapterId], references: [id])
+}
+
+model QuizSubmission {
+  id        String   @id @default(uuid())
+  quizId    String
+  userId    String
+  createdAt DateTime @default(now())
+
+  Quiz Quiz @relation(fields: [quizId], references: [id])
+
+  @@unique([quizId, userId]) // ❗ Prevent multiple attempts
+}
+
 enum CourseLevels {
   Beginner
   Intermediate
@@ -187,4 +221,9 @@ enum EnrolmentStatus {
 enum VideoSource {
   UPLOAD
   EMBED
+}
+
+enum QuizType {
+  COURSE
+  CHAPTER
 }
