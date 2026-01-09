@@ -1,6 +1,7 @@
 "use client";
 
 import { PublicCourseType } from "@/app/data/course/get-all-courses";
+import { FeaturedCourseType } from "@/app/data/course/get-all-featured-courses";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface iAppProps {
-  data: PublicCourseType;
+  data: FeaturedCourseType;
 }
 
 export function PublicCourseCard({ data }: iAppProps) {
