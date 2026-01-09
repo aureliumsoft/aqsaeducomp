@@ -1,32 +1,29 @@
 import "server-only";
-
 import { prisma } from "@/lib/db";
 
 export async function getAllCourses() {
-  // await new Promise((resolve) => setTimeout(resolve, 2000));
-
-  const data = await prisma.course.findMany({
+  return prisma.course.findMany({
     where: {
       status: "Published",
     },
     select: {
+      id: true,
       title: true,
-      price: true,
-      smallDescription: true,
       slug: true,
       fileKey: true,
-      id: true,
-      level: true,
       duration: true,
+      level: true,
       category: true,
+      smallDescription: true,
+      price: true,
       isFree: true,
     },
     orderBy: {
       createdAt: "desc",
     },
   });
-
-  return data;
 }
 
-export type PublicCourseType = Awaited<ReturnType<typeof getAllCourses>>[0];
+export type PublicCourseType = NonNullable<
+  Awaited<ReturnType<typeof getAllCourses>>[number]
+>;

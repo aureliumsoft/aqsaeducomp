@@ -8,7 +8,6 @@ export async function RenderFeaturedCourses() {
 
   return (
     <>
-      {/* All Courses View */}
       {courses.length === 0 ? (
         <EmptyState
           title="No Featured Courses Found"
