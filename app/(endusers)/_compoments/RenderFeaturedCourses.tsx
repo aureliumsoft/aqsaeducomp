@@ -5,7 +5,7 @@ import { PublicCourseCard } from "../courses/_components/PublicCourseCard";
 import type { PublicCourseType } from "@/app/data/course/get-all-courses";
 
 export async function RenderFeaturedCourses() {
-  const courses: PublicCourseType[] = await getAllFeaturedCourses();
+  const courses: any = await getAllFeaturedCourses();
 
   return (
     <>
@@ -18,7 +18,7 @@ export async function RenderFeaturedCourses() {
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-          {courses.map((course) => (
+          {courses.map((course: any) => (
             <PublicCourseCard key={course.id} data={course} />
           ))}
         </div>
