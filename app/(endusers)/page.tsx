@@ -1,6 +1,5 @@
 import HeroSection from "@/components/HeroSection";
 import Highlights from "@/components/Highlights";
-import { RenderFeaturedCourses } from "./_compoments/RenderFeaturedCourses";
 import { Suspense } from "react";
 import AnimationWrapper from "./_compoments/AnimationWraper";
 import VisionMission from "@/components/VisionMission";
@@ -24,7 +23,7 @@ export default function AqsaQuranAcademyLanding() {
       <Highlights />
 
       {/* Featured Courses */}
-      <section id="courses" className="py-20 bg-muted-foreground/20">
+      {/* <section id="courses" className="py-20 bg-muted-foreground/20">
         <div className="max-w-7xl mx-auto px-6">
           <h3 className="text-3xl font-bold text-center mb-12 text-primary">
             Featured Courses
@@ -36,7 +35,7 @@ export default function AqsaQuranAcademyLanding() {
             </Suspense>
           </AnimationWrapper>
         </div>
-      </section>
+      </section> */}
 
       {/* Vision & Mission Section */}
       <VisionMission />
@@ -71,7 +70,6 @@ export default function AqsaQuranAcademyLanding() {
           </AnimationWrapper>
         </div>
       </section>
-      
     </div>
   );
 }
