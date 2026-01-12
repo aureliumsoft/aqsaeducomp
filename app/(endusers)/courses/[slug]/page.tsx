@@ -78,7 +78,7 @@ export default async function SlugPage({ params }: { params: Params }) {
             <div>
               {course.chapters.length} Chapters |{" "}
               {course.chapters.reduce(
-                (total, chapter) => total + chapter.lessons.length,
+                (total: number, chapter) => total + chapter.lessons.length,
                 0
               ) || 0}{" "}
               Lessons
