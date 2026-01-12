@@ -22,21 +22,6 @@ export default function AqsaQuranAcademyLanding() {
       {/* Highlights Section */}
       <Highlights />
 
-      {/* Featured Courses */}
-      {/* <section id="courses" className="py-20 bg-muted-foreground/20">
-        <div className="max-w-7xl mx-auto px-6">
-          <h3 className="text-3xl font-bold text-center mb-12 text-primary">
-            Featured Courses
-          </h3>
-
-          <AnimationWrapper>
-            <Suspense fallback={<div>Loading courses...</div>}>
-              <RenderFeaturedCourses />
-            </Suspense>
-          </AnimationWrapper>
-        </div>
-      </section> */}
-
       {/* Vision & Mission Section */}
       <VisionMission />
       {/* Industry Experience Section */}
